@@ -111,6 +111,14 @@ inputs:
         leave this option empty then the default one will be used.
       is_expand: true
       is_required: false
+- thumb_url:
+  opts:
+    title: "Thumb URL"
+    description: |
+      Optionally you can add a QR code image URL as thumb
+      [https://api.slack.com/docs/message-attachments] - thumb_url
+    is_expand: true
+    is_required: false
   - icon_url:
     opts:
       title: "Icon URL"

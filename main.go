@@ -25,6 +25,7 @@ type ConfigsModel struct {
 	ColorOnError        string
 	Emoji               string
 	EmojiOnError        string
+	ThumbURL						string
 	IconURL             string
 	IconURLOnError      string
 	// Other Inputs
@@ -45,6 +46,7 @@ func createConfigsModelFromEnvs() ConfigsModel {
 		EmojiOnError:        os.Getenv("emoji_on_error"),
 		Color:               os.Getenv("color"),
 		ColorOnError:        os.Getenv("color_on_error"),
+		ThumbURL:        	 	 os.Getenv("thumb_url"),
 		IconURL:             os.Getenv("icon_url"),
 		IconURLOnError:      os.Getenv("icon_url_on_error"),
 		//
