@@ -69,6 +69,7 @@ func (configs ConfigsModel) print() {
 	fmt.Println(" - ColorOnError:", configs.ColorOnError)
 	fmt.Println(" - Emoji:", configs.Emoji)
 	fmt.Println(" - EmojiOnError:", configs.EmojiOnError)
+	fmt.Println(" - ThumbURL:", configs.ThumbURL)
 	fmt.Println(" - IconURL:", configs.IconURL)
 	fmt.Println(" - IconURLOnError:", configs.IconURLOnError)
 	fmt.Println("")
@@ -112,6 +113,7 @@ type RequestParams struct {
 	Username  *string `json:"username"`
 	EmojiIcon *string `json:"icon_emoji"`
 	IconURL   *string `json:"icon_url"`
+	ThumbURL  *string `json:"thumb_url"`
 }
 
 // CreatePayloadParam ...
@@ -187,6 +189,14 @@ func CreatePayloadParam(configs ConfigsModel) (string, error) {
 	// if Icon URL defined ignore the emoji input
 	if reqParams.IconURL != nil {
 		reqParams.EmojiIcon = nil
+	}
+
+	reqThumbURL := configs.ThumbURL
+	if reqThumbURL != "" {
+		reqParams.ThumbURL = &reqThumbURL
+	}
+	if configs.IsBuildFailed {
+		reqParams.ThumbURL = nil
 	}
 
 	if configs.IsDebugMode {
