@@ -100,6 +100,7 @@ type AttachmentItemModel struct {
 	Text     string   `json:"text"`
 	Color    string   `json:"color,omitempty"`
 	MrkdwnIn []string `json:"mrkdwn_in,omitempty"`
+	ThumbURL  *string `json:"thumb_url"`
 }
 
 // RequestParams ...
@@ -113,7 +114,6 @@ type RequestParams struct {
 	Username  *string `json:"username"`
 	EmojiIcon *string `json:"icon_emoji"`
 	IconURL   *string `json:"icon_url"`
-	ThumbURL  *string `json:"thumb_url"`
 }
 
 // CreatePayloadParam ...
@@ -136,14 +136,32 @@ func CreatePayloadParam(configs ConfigsModel) (string, error) {
 		}
 	}
 
-	reqParams := RequestParams{
-		Attachments: []AttachmentItemModel{
-			{
-				Text: msgText, Fallback: msgText,
-				Color:    msgColor,
-				MrkdwnIn: []string{"text", "pretext", "fields"},
+	thumbURL := configs.ThumbURL
+	if configs.IsBuildFailed {
+		thumbURL = nil
+	}
+
+	if thumbURL != nill {
+		reqParams := RequestParams{
+			Attachments: []AttachmentItemModel{
+				{
+					Text: msgText, Fallback: msgText,
+					Color:    msgColor,
+					thumb_url: thumbURL,
+					MrkdwnIn: []string{"text", "pretext", "fields"},
+				},
 			},
-		},
+		}
+	} else {
+		reqParams := RequestParams{
+			Attachments: []AttachmentItemModel{
+				{
+					Text: msgText, Fallback: msgText,
+					Color:    msgColor,
+					MrkdwnIn: []string{"text", "pretext", "fields"},
+				},
+			},
+		}
 	}
 
 	// - optional
@@ -189,14 +207,6 @@ func CreatePayloadParam(configs ConfigsModel) (string, error) {
 	// if Icon URL defined ignore the emoji input
 	if reqParams.IconURL != nil {
 		reqParams.EmojiIcon = nil
-	}
-
-	reqThumbURL := configs.ThumbURL
-	if reqThumbURL != "" {
-		reqParams.ThumbURL = &reqThumbURL
-	}
-	if configs.IsBuildFailed {
-		reqParams.ThumbURL = nil
 	}
 
 	if configs.IsDebugMode {
