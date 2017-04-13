@@ -18,16 +18,19 @@ type ConfigsModel struct {
 	WebhookURL          string
 	Channel             string
 	FromUsername        string
-	FromUsernameOnError string
-	Message             string
-	MessageOnError      string
+	FromUsernameLink    string
+	Title        				string
+	TitleLink        		string
+	Footer			        string
+	TimeString	        string
+	FiledTitle1	        string
+	FiledDetail1        string
+	FiledTitle2      	  string
+	FiledDetail2        string
 	Color               string
 	ColorOnError        string
-	Emoji               string
-	EmojiOnError        string
-	ThumbURL						string
+	ThumbURL        		string
 	IconURL             string
-	IconURLOnError      string
 	// Other Inputs
 	IsDebugMode bool
 	// Other configs
@@ -36,19 +39,22 @@ type ConfigsModel struct {
 
 func createConfigsModelFromEnvs() ConfigsModel {
 	return ConfigsModel{
-		WebhookURL:          os.Getenv("webhook_url"),
-		Channel:             os.Getenv("channel"),
-		FromUsername:        os.Getenv("from_username"),
-		FromUsernameOnError: os.Getenv("from_username_on_error"),
-		Message:             os.Getenv("message"),
-		MessageOnError:      os.Getenv("message_on_error"),
-		Emoji:               os.Getenv("emoji"),
-		EmojiOnError:        os.Getenv("emoji_on_error"),
+		WebhookURL:          	os.Getenv("webhook_url"),
+		Channel:             	os.Getenv("channel"),
+		FromUsername:        	os.Getenv("from_username"),
+		FromUsernameLink: 	 	os.Getenv("from_username_link"),
+		Title:								os.Getenv("title"),
+		TitleLink:						os.Getenv("title_link"),
+		Footer:								os.Getenv("footer"),
+		TimeString:						os.Getenv("timestring"),
+		FiledTitle1:					os.Getenv("field_title_1"),
+		FiledDetail1:					os.Getenv("field_detail_1"),
+		FiledTitle2:					os.Getenv("field_title_2"),
+		FiledDetail2:					os.Getenv("field_detail_2"),
 		Color:               os.Getenv("color"),
 		ColorOnError:        os.Getenv("color_on_error"),
 		ThumbURL:        	 	 os.Getenv("thumb_url"),
 		IconURL:             os.Getenv("icon_url"),
-		IconURLOnError:      os.Getenv("icon_url_on_error"),
 		//
 		IsDebugMode: (os.Getenv("is_debug_mode") == "yes"),
 		//
@@ -62,16 +68,19 @@ func (configs ConfigsModel) print() {
 	fmt.Println(" - WebhookURL:", configs.WebhookURL)
 	fmt.Println(" - Channel:", configs.Channel)
 	fmt.Println(" - FromUsername:", configs.FromUsername)
-	fmt.Println(" - FromUsernameOnError:", configs.FromUsernameOnError)
-	fmt.Println(" - Message:", configs.Message)
-	fmt.Println(" - MessageOnError:", configs.MessageOnError)
+	fmt.Println(" - FromUsernameLink:", configs.FromUsernameLink)
+	fmt.Println(" - Title:", configs.Title)
+	fmt.Println(" - TitleLink:", configs.TitleLink)
+	fmt.Println(" - Footer:", configs.Footer)
+	fmt.Println(" - TimeString:", configs.TimeString)
+	fmt.Println(" - FiledTitle1:", configs.FiledTitle1)
+	fmt.Println(" - FiledDetail1:", configs.FiledDetail1)
+	fmt.Println(" - FiledTitle2:", configs.FiledTitle2)
+	fmt.Println(" - FiledDetail2:", configs.FiledDetail2)
 	fmt.Println(" - Color:", configs.Color)
 	fmt.Println(" - ColorOnError:", configs.ColorOnError)
-	fmt.Println(" - Emoji:", configs.Emoji)
-	fmt.Println(" - EmojiOnError:", configs.EmojiOnError)
 	fmt.Println(" - ThumbURL:", configs.ThumbURL)
 	fmt.Println(" - IconURL:", configs.IconURL)
-	fmt.Println(" - IconURLOnError:", configs.IconURLOnError)
 	fmt.Println("")
 	fmt.Println(colorstring.Blue("Other configs:"))
 	fmt.Println(" - IsDebugMode:", configs.IsDebugMode)
@@ -84,9 +93,6 @@ func (configs ConfigsModel) validate() error {
 	if configs.WebhookURL == "" {
 		return errors.New("No Webhook URL parameter specified!")
 	}
-	if configs.Message == "" {
-		return errors.New("No Message parameter specified!")
-	}
 	if configs.Color == "" {
 		return errors.New("No Color parameter specified!")
 	}
@@ -94,13 +100,24 @@ func (configs ConfigsModel) validate() error {
 	return nil
 }
 
+// FieldModel ...
+type AttachmentFieldModel struct {
+	Title 			string   `json:"title"`
+	Value    		string   `json:"value"`
+	Short    		string   `json:"short"`
+}
+
 // AttachmentItemModel ...
 type AttachmentItemModel struct {
-	Fallback string   `json:"fallback"`
-	Text     string   `json:"text"`
-	Color    string   `json:"color,omitempty"`
-	MrkdwnIn []string `json:"mrkdwn_in,omitempty"`
-	ThumbURL  *string `json:"thumb_url"`
+	Fallback 			string   `json:"fallback"`
+	Color    			string   `json:"color,omitempty"`
+	Title    			string   `json:"title"`
+	TitleLink     string   `json:"title_link"`
+	Text     			string   `json:"text"`
+	Fields []AttachmentFieldModel `json:"fields,omitempty"`
+	ThumbURL  		string `json:"thumb_url,omitempty"`
+	Footer  			string `json:"footer,omitempty"`
+	TimeString  	string `json:"ts,omitempty"`
 }
 
 // RequestParams ...
@@ -127,41 +144,57 @@ func CreatePayloadParam(configs ConfigsModel) (string, error) {
 			msgColor = configs.ColorOnError
 		}
 	}
-	msgText := configs.Message
-	if configs.IsBuildFailed {
-		if configs.MessageOnError == "" {
-			fmt.Println(colorstring.Yellow(" (i) Build failed but no message_on_error defined, using default."))
-		} else {
-			msgText = configs.MessageOnError
+
+	// msgText := configs.Message
+	// if configs.IsBuildFailed {
+	// 	if configs.MessageOnError == "" {
+	// 		fmt.Println(colorstring.Yellow(" (i) Build failed but no message_on_error defined, using default."))
+	// 	} else {
+	// 		msgText = configs.MessageOnError
+	// 	}
+	// }
+
+	fieldTitle1 := configs.FiledTitle1
+	fieldDetail1 := configs.FiledDetail1
+	fieldTitle2 := configs.FiledTitle2
+	fieldDetail2 := configs.FiledDetail2
+
+	fields := []AttachmentFieldModel{}
+
+	if fieldTitle1 != "" && fieldTitle2 != "" {
+		fields = []AttachmentFieldModel{
+			{
+				Title:  fieldTitle1,
+				Value:  fieldDetail1,
+			},
+			{
+				Title: 	fieldTitle2,
+				Value:  fieldDetail2,
+			},
+		}
+	} else if fieldTitle1 != "" {
+		fields = []AttachmentFieldModel{
+			{
+				Title: 	fieldTitle1,
+				Value:  fieldDetail1,
+			},
 		}
 	}
 
-	thumbURL := configs.ThumbURL
-	if configs.IsBuildFailed {
-		thumbURL = nil
-	}
 
-	if thumbURL != nill {
-		reqParams := RequestParams{
-			Attachments: []AttachmentItemModel{
-				{
-					Text: msgText, Fallback: msgText,
-					Color:    msgColor,
-					thumb_url: thumbURL,
-					MrkdwnIn: []string{"text", "pretext", "fields"},
-				},
+	reqParams := RequestParams{
+		Attachments: []AttachmentItemModel{
+			{
+				Fallback: 	configs.Title,
+				Color:    	msgColor,
+				Title: 			configs.Title,
+				TitleLink:	configs.TitleLink,
+				Fields: 		fields,
+				ThumbURL:   configs.ThumbURL,
+				Footer:			configs.Footer,
+				TimeString:	configs.TimeString,
 			},
-		}
-	} else {
-		reqParams := RequestParams{
-			Attachments: []AttachmentItemModel{
-				{
-					Text: msgText, Fallback: msgText,
-					Color:    msgColor,
-					MrkdwnIn: []string{"text", "pretext", "fields"},
-				},
-			},
-		}
+		},
 	}
 
 	// - optional
@@ -173,37 +206,19 @@ func CreatePayloadParam(configs ConfigsModel) (string, error) {
 	if reqUsername != "" {
 		reqParams.Username = &reqUsername
 	}
-	if configs.IsBuildFailed {
-		if configs.FromUsernameOnError == "" {
-			fmt.Println(colorstring.Yellow(" (i) Build failed but no from_username_on_error defined, using default."))
-		} else {
-			reqParams.Username = &configs.FromUsernameOnError
-		}
+
+	reqUsernameLink := configs.FromUsernameLink
+	if reqUsernameLink != "" {
+		reqParams.Username = &reqUsername
 	}
 
-	reqEmojiIcon := configs.Emoji
-	if reqEmojiIcon != "" {
-		reqParams.EmojiIcon = &reqEmojiIcon
-	}
-	if configs.IsBuildFailed {
-		if configs.EmojiOnError == "" {
-			fmt.Println(colorstring.Yellow(" (i) Build failed but no emoji_on_error defined, using default."))
-		} else {
-			reqParams.EmojiIcon = &configs.EmojiOnError
-		}
-	}
+
 
 	reqIconURL := configs.IconURL
 	if reqIconURL != "" {
 		reqParams.IconURL = &reqIconURL
 	}
-	if configs.IsBuildFailed {
-		if configs.IconURLOnError == "" {
-			fmt.Println(colorstring.Yellow(" (i) Build failed but no icon_url_on_error defined, using default."))
-		} else {
-			reqParams.IconURL = &configs.IconURLOnError
-		}
-	}
+
 	// if Icon URL defined ignore the emoji input
 	if reqParams.IconURL != nil {
 		reqParams.EmojiIcon = nil

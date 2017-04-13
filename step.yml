@@ -52,25 +52,51 @@ inputs:
         The one which should be presented as the sender of the message
       is_expand: true
       is_required: false
-  - from_username_on_error: Bitrise CI - ERROR
+  - from_username_link: Bitrise CI - OK
     opts:
-      title: "The 'from' name - if the build failed"
+      title: "The 'from' name"
       description: |
-        **This option will be used if the build failed.** If you
-        leave this option empty then the default one will be used.
+        The one which should be presented as the sender of the message
       is_expand: true
       is_required: false
-  - message: Type your message here
+  - title: Type your message here
     opts:
       title: "The message you want to send"
       is_expand: true
       is_required: true
-  - message_on_error:
+  - title_link: Type your message here
     opts:
-      title: "The message you want to send - if the build failed"
-      description: |
-        **This option will be used if the build failed.** If you
-        leave this option empty then the default one will be used.
+      title: "The message you want to send"
+      is_expand: true
+      is_required: true
+  - footer: Type your message here
+    opts:
+      title: "The message you want to send"
+      is_expand: true
+      is_required: true
+  - timestring: Type your message here
+    opts:
+      title: "The message you want to send"
+      is_expand: true
+      is_required: true
+  - field_title_1: Type your message here
+    opts:
+      title: "The message you want to send"
+      is_expand: true
+      is_required: true
+  - field_detail_1: Type your message here
+    opts:
+      title: "The message you want to send"
+      is_expand: true
+      is_required: true
+  - field_title_2: Type your message here
+    opts:
+      title: "The message you want to send"
+      is_expand: true
+      is_required: false
+  - field_detail_2: Type your message here
+    opts:
+      title: "The message you want to send"
       is_expand: true
       is_required: false
   - color: "good"
@@ -87,25 +113,6 @@ inputs:
   - color_on_error: "danger"
     opts:
       title: "Message color"
-      description: |
-        **This option will be used if the build failed.** If you
-        leave this option empty then the default one will be used.
-      is_expand: true
-      is_required: false
-  - emoji: ":white_check_mark:"
-    opts:
-      title: "Emoji Icon"
-      description: |
-        Optionally you can specify a Slack emoji as the sender
-        icon. You can use the Ghost icon for example
-        if you specify `:ghost:` here as an input.
-
-        **If you specify an Icon URL then this Emoji input will be ignored!**
-      is_expand: true
-      is_required: false
-  - emoji_on_error: ":no_entry_sign:"
-    opts:
-      title: "Emoji Icon - if build failed"
       description: |
         **This option will be used if the build failed.** If you
         leave this option empty then the default one will be used.
@@ -132,14 +139,6 @@ inputs:
         Slack custom emoji guideline: [https://slack.zendesk.com/hc/en-us/articles/202931348-Using-emoji-and-emoticons](https://slack.zendesk.com/hc/en-us/articles/202931348-Using-emoji-and-emoticons)
 
         *If you specify this input, the Emoji input will be ignored!*
-      is_expand: true
-      is_required: false
-  - icon_url_on_error:
-    opts:
-      title: "Icon URL - if build failed"
-      description: |
-        **This option will be used if the build failed.** If you
-        leave this option empty then the default one will be used.
       is_expand: true
       is_required: false
   - is_debug_mode: "no"
