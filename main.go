@@ -33,6 +33,7 @@ type ConfigsModel struct {
 	IsDebugMode bool
 	// Other configs
 	IsBuildFailed bool
+	IsBuildSucceed bool
 }
 
 func createConfigsModelFromEnvs() ConfigsModel {
@@ -55,6 +56,7 @@ func createConfigsModelFromEnvs() ConfigsModel {
 		IsDebugMode: (os.Getenv("is_debug_mode") == "yes"),
 		//
 		IsBuildFailed: (os.Getenv("STEPLIB_BUILD_STATUS") != "0"),
+		IsBuildSucceed: (os.Getenv("STEPLIB_BUILD_STATUS") == "0"),
 	}
 }
 
@@ -79,6 +81,7 @@ func (configs ConfigsModel) print() {
 	fmt.Println(colorstring.Blue("Other configs:"))
 	fmt.Println(" - IsDebugMode:", configs.IsDebugMode)
 	fmt.Println(" - IsBuildFailed:", configs.IsBuildFailed)
+	fmt.Println(" - IsBuildSucceed:", configs.IsBuildSucceed)
 	fmt.Println("")
 }
 
@@ -154,26 +157,27 @@ func CreatePayloadParam(configs ConfigsModel) (string, error) {
 
 	fields := []AttachmentFieldModel{}
 
-	if fieldTitle1 != "" && fieldTitle2 != "" {
-		fields = []AttachmentFieldModel{
-			{
-				Title:  fieldTitle1,
-				Value:  fieldDetail1,
-			},
-			{
-				Title: 	fieldTitle2,
-				Value:  fieldDetail2,
-			},
-		}
-	} else if fieldTitle1 != "" {
-		fields = []AttachmentFieldModel{
-			{
-				Title: 	fieldTitle1,
-				Value:  fieldDetail1,
-			},
+	if configs.IsBuildSucceed {
+		if fieldTitle1 != "" && fieldTitle2 != "" {
+			fields = []AttachmentFieldModel{
+				{
+					Title:  fieldTitle1,
+					Value:  fieldDetail1,
+				},
+				{
+					Title: 	fieldTitle2,
+					Value:  fieldDetail2,
+				},
+			}
+		} else if fieldTitle1 != "" {
+			fields = []AttachmentFieldModel{
+				{
+					Title: 	fieldTitle1,
+					Value:  fieldDetail1,
+				},
+			}
 		}
 	}
-
 
 	reqParams := RequestParams{
 		Attachments: []AttachmentItemModel{
@@ -194,7 +198,14 @@ func CreatePayloadParam(configs ConfigsModel) (string, error) {
 	if reqChannel != "" {
 		reqParams.Channel = &reqChannel
 	}
+
+	statusEmoji := ":+1:"
+	if configs.IsBuildFailed {
+		statusEmoji = ":-1:"
+	}
+
 	reqUsername := configs.FromUsername
+	reqUsername += statusEmoji
 	if reqUsername != "" {
 		reqParams.Username = &reqUsername
 	}
