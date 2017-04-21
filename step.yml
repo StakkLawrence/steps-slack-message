@@ -52,13 +52,6 @@ inputs:
         The one which should be presented as the sender of the message
       is_expand: true
       is_required: false
-  - from_username_link: Bitrise CI - OK
-    opts:
-      title: "The 'from' name"
-      description: |
-        The one which should be presented as the sender of the message
-      is_expand: true
-      is_required: false
   - title: Type your message here
     opts:
       title: "The message you want to send"
@@ -70,11 +63,6 @@ inputs:
       is_expand: true
       is_required: true
   - footer: Type your message here
-    opts:
-      title: "The message you want to send"
-      is_expand: true
-      is_required: true
-  - timestring: Type your message here
     opts:
       title: "The message you want to send"
       is_expand: true

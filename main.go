@@ -18,11 +18,9 @@ type ConfigsModel struct {
 	WebhookURL          string
 	Channel             string
 	FromUsername        string
-	FromUsernameLink    string
 	Title        				string
 	TitleLink        		string
 	Footer			        string
-	TimeString	        string
 	FiledTitle1	        string
 	FiledDetail1        string
 	FiledTitle2      	  string
@@ -42,11 +40,9 @@ func createConfigsModelFromEnvs() ConfigsModel {
 		WebhookURL:          	os.Getenv("webhook_url"),
 		Channel:             	os.Getenv("channel"),
 		FromUsername:        	os.Getenv("from_username"),
-		FromUsernameLink: 	 	os.Getenv("from_username_link"),
 		Title:								os.Getenv("title"),
 		TitleLink:						os.Getenv("title_link"),
 		Footer:								os.Getenv("footer"),
-		TimeString:						os.Getenv("timestring"),
 		FiledTitle1:					os.Getenv("field_title_1"),
 		FiledDetail1:					os.Getenv("field_detail_1"),
 		FiledTitle2:					os.Getenv("field_title_2"),
@@ -68,11 +64,9 @@ func (configs ConfigsModel) print() {
 	fmt.Println(" - WebhookURL:", configs.WebhookURL)
 	fmt.Println(" - Channel:", configs.Channel)
 	fmt.Println(" - FromUsername:", configs.FromUsername)
-	fmt.Println(" - FromUsernameLink:", configs.FromUsernameLink)
 	fmt.Println(" - Title:", configs.Title)
 	fmt.Println(" - TitleLink:", configs.TitleLink)
 	fmt.Println(" - Footer:", configs.Footer)
-	fmt.Println(" - TimeString:", configs.TimeString)
 	fmt.Println(" - FiledTitle1:", configs.FiledTitle1)
 	fmt.Println(" - FiledDetail1:", configs.FiledDetail1)
 	fmt.Println(" - FiledTitle2:", configs.FiledTitle2)
@@ -117,7 +111,6 @@ type AttachmentItemModel struct {
 	Fields []AttachmentFieldModel `json:"fields,omitempty"`
 	ThumbURL  		string `json:"thumb_url,omitempty"`
 	Footer  			string `json:"footer,omitempty"`
-	TimeString  	string `json:"ts,omitempty"`
 }
 
 // RequestParams ...
@@ -192,7 +185,6 @@ func CreatePayloadParam(configs ConfigsModel) (string, error) {
 				Fields: 		fields,
 				ThumbURL:   configs.ThumbURL,
 				Footer:			configs.Footer,
-				TimeString:	configs.TimeString,
 			},
 		},
 	}
@@ -206,13 +198,6 @@ func CreatePayloadParam(configs ConfigsModel) (string, error) {
 	if reqUsername != "" {
 		reqParams.Username = &reqUsername
 	}
-
-	reqUsernameLink := configs.FromUsernameLink
-	if reqUsernameLink != "" {
-		reqParams.Username = &reqUsername
-	}
-
-
 
 	reqIconURL := configs.IconURL
 	if reqIconURL != "" {
