@@ -199,13 +199,7 @@ func CreatePayloadParam(configs ConfigsModel) (string, error) {
 		reqParams.Channel = &reqChannel
 	}
 
-	statusEmoji := ":+1:"
-	if configs.IsBuildFailed {
-		statusEmoji = ":-1:"
-	}
-
 	reqUsername := configs.FromUsername
-	reqUsername += statusEmoji
 	if reqUsername != "" {
 		reqParams.Username = &reqUsername
 	}
